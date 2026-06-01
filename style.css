@@ -1,4 +1,12 @@
 body{ 
     background-color: black;
+    front-family: "Microsoft JhengHei", Arial, sans-serif;
+}
 
+container{
+    background-color: black;
+    width: 80px;
+    max-width: 800px;
+    padding: auto;
+    margin-top: 50px;
 }
