@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Search Filters</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Noto+Sans+TC:wght@500;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>h1{margin:0;font-family:'Bangers',cursive;font-size:2.6rem}</style>
+</head>
+<body>
+    <div class="page">
+        <div class="topbar">
+            <button id="login-open" class="login-button">Login</button>
+        </div>
+
+        <header class="hero hero-small">
+            <div class="hero-text">
+                <span class="eyebrow">Guided Search</span>
+                <h1>Search for what you need</h1>
+                <p>Choose a brand and the kind of device you want, then press Search.</p>
+            </div>
+        </header>
+
+        <main class="content">
+            <section class="panel">
+                <h2>Brands</h2>
+                <div id="brands" class="filter-group">
+                    <button class="filter-button" data-brand="Apple" data-page="brand.html?brand=Apple">Apple</button>
+                    <button class="filter-button" data-brand="Samsung" data-page="brand.html?brand=Samsung">Samsung</button>
+                    <button class="filter-button" data-brand="Sony" data-page="brand.html?brand=Sony">Sony</button>
+                    <button class="filter-button" data-brand="Oppo" data-page="brand.html?brand=Oppo">Oppo</button>
+                </div>
+
+                <h3 style="margin-top:18px">Or search for another brand</h3>
+                <div style="display:flex;gap:8px;margin-top:10px">
+                    <input id="custom-brand" class="form-input" placeholder="Enter brand name..." style="flex:1">
+                    <button id="search-custom" class="search-button">Go</button>
+                </div>
+
+                <h2 style="margin-top:18px">Device Type</h2>
+                <div id="types" class="filter-group">
+                    <button class="filter-button" data-type="Resin Printer">Resin Printer</button>
+                    <button class="filter-button" data-type="FDM Printer">FDM Printer</button>
+                    <button class="filter-button" data-type="Scanner">Scanner</button>
+                    <button class="filter-button" data-type="Any">Any</button>
+                </div>
+
+                <div class="query-preview" id="preview">Selected: none</div>
+
+                <div class="search-controls">
+                    <button id="do-search" class="search-button">Search</button>
+                    <button id="clear-filters" class="login-button">Clear</button>
+                    <a class="search-button secondary" href="index.html">Back</a>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <div id="login-modal" class="modal hidden" aria-hidden="true">
+        <div class="modal-content">
+            <button id="login-close" class="modal-close" aria-label="Close">×</button>
+            <h3>Sign in</h3>
+            <input id="login-email" class="form-input" placeholder="Email address">
+            <input id="login-pass" type="password" class="form-input" placeholder="Password">
+            <div style="margin-top:14px"><button id="login-submit" class="search-button">Sign in</button></div>
+        </div>
+    </div>
+
+    <script>
+        // Login UI (same behavior as other pages)
+        (function(){
+            const open = document.getElementById('login-open');
+            const modal = document.getElementById('login-modal');
+            const close = document.getElementById('login-close');
+            const submit = document.getElementById('login-submit');
+            function updateButton(){
+                const name = localStorage.getItem('userName');
+                if(name){ open.textContent = 'Account'; } else { open.textContent = 'Login'; }
+            }
+            open.addEventListener('click', ()=>{ if(localStorage.getItem('userName')){ alert('Signed in as '+localStorage.getItem('userName')); } else { modal.classList.remove('hidden'); }});
+            close.addEventListener('click', ()=>{ modal.classList.add('hidden'); });
+            submit.addEventListener('click', ()=>{ const email = document.getElementById('login-email').value||''; const name = email.split('@')[0]||'User'; localStorage.setItem('userName', name); modal.classList.add('hidden'); updateButton(); alert('Signed in as ' + name); });
+            updateButton();
+        })();
+
+        // Filter logic
+        (function(){
+            let selectedBrand = null;
+            let selectedType = null;
+            const preview = document.getElementById('preview');
+
+            function updatePreview(){
+                const b = selectedBrand || 'none';
+                const t = selectedType || 'none';
+                preview.textContent = `Selected: ${b} / ${t}`;
+            }
+
+            function toggleGroup(containerId, attr, setter){
+                const container = document.getElementById(containerId);
+                container.addEventListener('click', (e)=>{
+                    const btn = e.target.closest('button');
+                    if(!btn) return;
+                    // clear active for siblings
+                    container.querySelectorAll('.filter-button').forEach(b=>b.classList.remove('active'));
+                    btn.classList.add('active');
+                    const val = btn.getAttribute(attr);
+                    setter(val);
+                    updatePreview();
+                });
+            }
+
+            // Brand buttons navigate to detail pages
+            document.getElementById('brands').addEventListener('click', (e)=>{
+                const btn = e.target.closest('button');
+                if(!btn) return;
+                const page = btn.getAttribute('data-page');
+                if(page){ window.location.href = page; }
+            });
+
+            // Custom brand search
+            document.getElementById('search-custom').addEventListener('click', ()=>{
+                const brand = document.getElementById('custom-brand').value?.trim();
+                if(!brand){ alert('Please enter a brand name'); return; }
+                window.location.href = `brand.html?brand=${encodeURIComponent(brand)}`;
+            });
+
+            // Allow Enter key to search
+            document.getElementById('custom-brand').addEventListener('keypress', (e)=>{
+                if(e.key==='Enter'){ document.getElementById('search-custom').click(); }
+            });
+            toggleGroup('types','data-type', (v)=>{ selectedType = (v==='Any'? null : v); });
+
+            document.getElementById('clear-filters').addEventListener('click', ()=>{
+                selectedBrand = null; selectedType = null;
+                document.querySelectorAll('.filter-button').forEach(b=>b.classList.remove('active'));
+                updatePreview();
+            });
+
+            document.getElementById('do-search').addEventListener('click', ()=>{
+                let parts = [];
+                if(selectedBrand) parts.push(selectedBrand);
+                if(selectedType) parts.push(selectedType);
+                if(parts.length===0){ alert('Please select at least a brand or device type.'); return; }
+                const query = encodeURIComponent(parts.join(' '));
+                window.location.href = `index555.html?q=${query}`;
+            });
+
+            updatePreview();
+        })();
+    </script>
+</body>
+</html>

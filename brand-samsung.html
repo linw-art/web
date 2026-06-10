@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Samsung - Brand Page</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Noto+Sans+TC:wght@500;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="page">
+        <div class="topbar">
+            <button id="login-open" class="login-button">Login</button>
+        </div>
+
+        <header class="hero hero-small">
+            <div class="hero-text">
+                <span class="eyebrow">Brand Page</span>
+                <h1>Samsung</h1>
+                <p>Global leader in electronics, displays, and mobile technology.</p>
+            </div>
+        </header>
+
+        <main class="content">
+            <section class="panel">
+                <h2>About Samsung</h2>
+                <p>Samsung Electronics is a multinational technology company that manufactures semiconductors, smartphones, TVs, and other consumer electronics. With a commitment to innovation and quality, Samsung delivers cutting-edge products worldwide.</p>
+            </section>
+
+            <section class="panel">
+                <h2>Popular Products</h2>
+                <div class="card-grid">
+                    <article class="card">
+                        <h3>Galaxy S24 Ultra</h3>
+                        <p>Flagship smartphone with advanced AI features and stunning display.</p>
+                        <p style="color:var(--accent-strong);font-weight:700">$1,799 NZD</p>
+                    </article>
+                    <article class="card">
+                        <h3>Galaxy Tab S9</h3>
+                        <p>Premium tablet with vibrant screen and powerful processor.</p>
+                        <p style="color:var(--accent-strong);font-weight:700">From $999 NZD</p>
+                    </article>
+                    <article class="card">
+                        <h3>Galaxy Buds Pro</h3>
+                        <p>Wireless earbuds with noise cancellation and immersive sound.</p>
+                        <p style="color:var(--accent-strong);font-weight:700">$299 NZD</p>
+                    </article>
+                </div>
+            </section>
+
+            <div class="action-row" style="gap:8px">
+                <a class="search-button" href="https://www.samsung.com/nz/" target="_blank">Visit Samsung Official Website</a>
+                <a class="search-button secondary" href="search.html" style="background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--text)">Back</a>
+            </div>
+        </main>
+    </div>
+
+    <div id="login-modal" class="modal hidden" aria-hidden="true">
+        <div class="modal-content">
+            <button id="login-close" class="modal-close" aria-label="Close">×</button>
+            <h3>Sign in</h3>
+            <input id="login-email" class="form-input" placeholder="Email address">
+            <input id="login-pass" type="password" class="form-input" placeholder="Password">
+            <div style="margin-top:14px"><button id="login-submit" class="search-button">Sign in</button></div>
+        </div>
+    </div>
+
+    <script>
+        (function(){
+            const open = document.getElementById('login-open');
+            const modal = document.getElementById('login-modal');
+            const close = document.getElementById('login-close');
+            const submit = document.getElementById('login-submit');
+            function updateButton(){
+                const name = localStorage.getItem('userName');
+                if(name){ open.textContent = 'Account'; } else { open.textContent = 'Login'; }
+            }
+            open.addEventListener('click', ()=>{ if(localStorage.getItem('userName')){ alert('Signed in as '+localStorage.getItem('userName')); } else { modal.classList.remove('hidden'); }});
+            close.addEventListener('click', ()=>{ modal.classList.add('hidden'); });
+            submit.addEventListener('click', ()=>{ const email = document.getElementById('login-email').value||''; const name = email.split('@')[0]||'User'; localStorage.setItem('userName', name); modal.classList.add('hidden'); updateButton(); alert('Signed in as ' + name); });
+            updateButton();
+        })();
+    </script>
+</body>
+</html>

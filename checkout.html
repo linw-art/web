@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Noto+Sans+TC:wght@500;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .checkout-card{max-width:760px;margin:40px auto;padding:28px;border-radius:18px}
+        .price{font-size:1.6rem;color:var(--accent-strong);margin-top:6px}
+        .buy-now{margin-top:18px}
+    </style>
+</head>
+<body>
+    <div class="page">
+        <div class="topbar">
+            <button id="login-open" class="login-button">Login</button>
+        </div>
+        <header class="hero hero-small">
+            <div class="hero-text">
+                <span class="eyebrow">Purchase</span>
+                <h1>Checkout</h1>
+                <p id="checkout-summary">Preparing checkout...</p>
+            </div>
+        </header>
+
+        <main class="content">
+            <section class="panel checkout-card">
+                <h2 id="product-title">--</h2>
+                <p id="product-desc">--</p>
+                <div class="price" id="product-price">--</div>
+                <div class="action-row buy-now">
+                    <a id="proceed-button" class="search-button" href="#">Proceed to payment</a>
+                    <a class="search-button secondary" href="index.html" style="margin-left:8px;background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--text);">Back</a>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        const id = params.get('id');
+        const titleEl = document.getElementById('product-title');
+        const descEl = document.getElementById('product-desc');
+        const priceEl = document.getElementById('product-price');
+        const proceed = document.getElementById('proceed-button');
+
+        const catalog = {
+            'voxelmate-pro': {title:'VoxelMate Pro', desc:'High-detail resin printer for models and prototypes.', price:'$699', shop:'https://example.com/buy/voxelmate-pro'},
+            'triforge-s1': {title:'TriForge S1', desc:'All-metal FDM printer with dual extrusion and large build area.', price:'$899', shop:'https://example.com/buy/triforge-s1'},
+            'dimensionx-mini': {title:'DimensionX Mini', desc:'Compact handheld 3D scanner for small objects and hobbyists.', price:'$349', shop:'https://example.com/buy/dimensionx-mini'}
+        };
+
+        if (!id || !catalog[id]){
+            titleEl.textContent = 'Product not found';
+            descEl.textContent = 'We could not find the product you requested.';
+            priceEl.textContent = '';
+            proceed.href = 'index.html';
+            proceed.textContent = 'Back to search';
+        } else {
+            const p = catalog[id];
+            titleEl.textContent = p.title;
+            descEl.textContent = p.desc;
+            priceEl.textContent = p.price;
+            proceed.href = p.shop;
+            proceed.target = '_blank';
+            proceed.textContent = 'Go to store';
+            document.getElementById('checkout-summary').textContent = `You're buying ${p.title}.`;
+        }
+    </script>
+</body>
+    <div id="login-modal" class="modal hidden" aria-hidden="true">
+        <div class="modal-content">
+            <button id="login-close" class="modal-close" aria-label="Close">×</button>
+            <h3>Sign in</h3>
+            <input id="login-email" class="form-input" placeholder="Email address">
+            <input id="login-pass" type="password" class="form-input" placeholder="Password">
+            <div style="margin-top:14px"><button id="login-submit" class="search-button">Sign in</button></div>
+        </div>
+    </div>
+
+    <script>
+        (function(){
+            const open = document.getElementById('login-open');
+            const modal = document.getElementById('login-modal');
+            const close = document.getElementById('login-close');
+            const submit = document.getElementById('login-submit');
+
+            function updateButton(){
+                const name = localStorage.getItem('userName');
+                if(name){ open.textContent = 'Account'; }
+                else { open.textContent = 'Login'; }
+            }
+
+            open.addEventListener('click', ()=>{ if(localStorage.getItem('userName')){ alert('Signed in as '+localStorage.getItem('userName')); } else { modal.classList.remove('hidden'); }});
+            close.addEventListener('click', ()=>{ modal.classList.add('hidden'); });
+            submit.addEventListener('click', ()=>{
+                const email = document.getElementById('login-email').value || '';
+                const name = email.split('@')[0] || 'User';
+                localStorage.setItem('userName', name);
+                modal.classList.add('hidden');
+                updateButton();
+                alert('Signed in as ' + name);
+            });
+
+            updateButton();
+        })();
+    </script>
+</html>

@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Brand Page</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Noto+Sans+TC:wght@500;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="page">
+        <div class="topbar">
+            <button id="login-open" class="login-button">Login</button>
+        </div>
+
+        <header class="hero hero-small">
+            <div class="hero-text">
+                <span class="eyebrow">Brand Page</span>
+                <h1 id="brand-name">--</h1>
+                <p id="brand-tagline">Innovative technology for modern lifestyles.</p>
+            </div>
+        </header>
+
+        <main class="content">
+            <section class="panel">
+                <h2>About <span id="about-brand">this brand</span></h2>
+                <p id="brand-about">Loading brand information...</p>
+            </section>
+
+            <section class="panel">
+                <h2>Popular Products</h2>
+                <div id="products" class="card-grid">
+                    <article class="card">
+                        <h3>Product 1</h3>
+                        <p>Premium flagship device with advanced features.</p>
+                        <p style="color:var(--accent-strong);font-weight:700">From $999 NZD</p>
+                    </article>
+                    <article class="card">
+                        <h3>Product 2</h3>
+                        <p>Mid-range option with great value and performance.</p>
+                        <p style="color:var(--accent-strong);font-weight:700">From $499 NZD</p>
+                    </article>
+                    <article class="card">
+                        <h3>Product 3</h3>
+                        <p>Accessory or specialized device for specific needs.</p>
+                        <p style="color:var(--accent-strong);font-weight:700">From $299 NZD</p>
+                    </article>
+                </div>
+            </section>
+
+            <div class="action-row" style="gap:8px">
+                <a id="visit-button" class="search-button" href="#" target="_blank">Visit Official Website</a>
+                <a class="search-button secondary" href="search.html" style="background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--text)">Back</a>
+            </div>
+        </main>
+    </div>
+
+    <div id="login-modal" class="modal hidden" aria-hidden="true">
+        <div class="modal-content">
+            <button id="login-close" class="modal-close" aria-label="Close">×</button>
+            <h3>Sign in</h3>
+            <input id="login-email" class="form-input" placeholder="Email address">
+            <input id="login-pass" type="password" class="form-input" placeholder="Password">
+            <div style="margin-top:14px"><button id="login-submit" class="search-button">Sign in</button></div>
+        </div>
+    </div>
+
+    <script>
+        // Login UI
+        (function(){
+            const open = document.getElementById('login-open');
+            const modal = document.getElementById('login-modal');
+            const close = document.getElementById('login-close');
+            const submit = document.getElementById('login-submit');
+            function updateButton(){
+                const name = localStorage.getItem('userName');
+                if(name){ open.textContent = 'Account'; } else { open.textContent = 'Login'; }
+            }
+            open.addEventListener('click', ()=>{ if(localStorage.getItem('userName')){ alert('Signed in as '+localStorage.getItem('userName')); } else { modal.classList.remove('hidden'); }});
+            close.addEventListener('click', ()=>{ modal.classList.add('hidden'); });
+            submit.addEventListener('click', ()=>{ const email = document.getElementById('login-email').value||''; const name = email.split('@')[0]||'User'; localStorage.setItem('userName', name); modal.classList.add('hidden'); updateButton(); alert('Signed in as ' + name); });
+            updateButton();
+        })();
+
+        // Brand info
+        (function(){
+            const params = new URLSearchParams(window.location.search);
+            const brand = params.get('brand');
+
+            if (!brand) {
+                document.getElementById('brand-name').textContent = 'Brand Not Found';
+                document.getElementById('brand-about').textContent = 'Please search for a valid brand.';
+                return;
+            }
+
+            const brandName = decodeURIComponent(brand);
+            const brandLower = brandName.toLowerCase();
+
+            // Brand database with custom info
+            const brandDatabase = {
+                'apple': {
+                    tagline: 'Innovative technology and premium design for every lifestyle.',
+                    about: 'Apple Inc. is a technology company that designs, manufactures, and markets smartphones, computers, and wearables. Known for sleek design and cutting-edge innovation, Apple products are used by millions worldwide.',
+                    website: 'https://www.apple.com/nz/'
+                },
+                'samsung': {
+                    tagline: 'Global leader in electronics, displays, and mobile technology.',
+                    about: 'Samsung Electronics is a multinational technology company that manufactures semiconductors, smartphones, TVs, and other consumer electronics. With a commitment to innovation and quality, Samsung delivers cutting-edge products worldwide.',
+                    website: 'https://www.samsung.com/nz/'
+                },
+                'sony': {
+                    tagline: 'Pioneer in electronics, entertainment, and imaging technology.',
+                    about: 'Sony Corporation is a Japanese multinational conglomerate that designs and manufactures consumer electronics, gaming consoles, and imaging products. Known for superior quality and innovation, Sony is trusted by professionals and consumers globally.',
+                    website: 'https://www.sony.co.nz/'
+                },
+                'oppo': {
+                    tagline: 'Innovative mobile technology with a focus on photography and design.',
+                    about: 'Oppo is a Chinese smartphone manufacturer known for its innovative camera technology and sleek design. With a strong focus on mobile imaging and user experience, Oppo delivers high-quality devices at competitive prices to consumers worldwide.',
+                    website: 'https://www.oppo.com/nz/'
+                }
+            };
+
+            // Get brand info or generate default
+            const info = brandDatabase[brandLower] || {
+                tagline: `Leading innovator in mobile and consumer technology.`,
+                about: `${brandName} is a technology company committed to delivering innovative products and services. With a focus on quality and customer satisfaction, ${brandName} continues to shape the future of technology worldwide.`,
+                website: `https://www.${brandLower}.com/nz/`
+            };
+
+            // Update page
+            document.getElementById('brand-name').textContent = brandName;
+            document.getElementById('brand-tagline').textContent = info.tagline;
+            document.getElementById('about-brand').textContent = brandName;
+            document.getElementById('brand-about').textContent = info.about;
+            document.getElementById('visit-button').href = info.website;
+            document.getElementById('visit-button').textContent = `Visit ${brandName} Official Website`;
+        })();
+    </script>
+</body>
+</html>

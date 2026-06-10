@@ -3,12 +3,127 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>3D Device Finder</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Noto+Sans+TC:wght@500;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="container">
-        <h1>Website</h1>
-        <p>webpage.</p>
-        <img src="images.jpg" alt="Description of image"> 
-    </div> </body>
+    <div class="page">
+        <div class="topbar">
+            <button id="login-open" class="login-button">Login</button>
+        </div>
+        <header class="hero">
+            <div class="hero-text">
+                <span class="eyebrow">3D Device Search</span>
+                <h1>3D Device Finder</h1>
+                <p>Search 3D printers and scanners, read the latest release news, and jump to purchase pages.</p>
+
+                <form action="index555.html" method="get" class="search-form">
+                    <label for="device-search" class="sr-only">Search devices</label>
+                    <input id="device-search" name="q" type="search" placeholder="VoxelMate Pro, TriForge S1, DimensionX Mini..." required class="search-input">
+                    <button type="submit" class="search-button">Search</button>
+                </form>
+
+                <div class="hero-links">
+                    <a href="#news">Latest Releases</a>
+                    <a href="#devices">Featured Devices</a>
+                    <a href="#about">About 3D Devices</a>
+                </div>
+                <div class="action-row" style="margin-top:16px">
+                    <a class="search-button" href="search.html">Search for what you need</a>
+                </div>
+            </div>
+            <div class="hero-image">
+                <img src="images.jpg" alt="Anime logo">
+            </div>
+        </header>
+
+        <main class="content">
+            <section id="news" class="panel">
+                <h2>Latest Releases</h2>
+                <div class="card-grid">
+                    <article class="card">
+                        <h3>VoxelMate Pro 2.0</h3>
+                        <p>New high-speed resin printer with improved cooling and a brighter LED array. Released this month.</p>
+                        <div class="action-row" style="margin-top:12px"><a class="search-button" href="index555.html?q=VoxelMate%20Pro">Learn more</a></div>
+                    </article>
+                    <article class="card">
+                        <h3>TriForge S1</h3>
+                        <p>All-metal FDM printer with dual extruders and easy bed leveling. Great for beginners and pros.</p>
+                        <div class="action-row" style="margin-top:12px"><a class="search-button" href="index555.html?q=TriForge%20S1">Learn more</a></div>
+                    </article>
+                    <article class="card">
+                        <h3>DimensionX Mini</h3>
+                        <p>Portable 3D scanner for quick object capture and small prototyping workflows.</p>
+                        <div class="action-row" style="margin-top:12px"><a class="search-button" href="index555.html?q=DimensionX%20Mini">Learn more</a></div>
+                    </article>
+                </div>
+            </section>
+
+            <section id="devices" class="panel">
+                <h2>Featured Devices</h2>
+                <div class="card-grid">
+                    <article class="card">
+                        <h3>TriForge S1</h3>
+                        <p>Reliable FDM printing with a 300×300mm build plate and dual extruders.</p>
+                    </article>
+                    <article class="card">
+                        <h3>VoxelMate Pro</h3>
+                        <p>Desktop resin printer for high-detail prototypes and miniatures.</p>
+                    </article>
+                    <article class="card">
+                        <h3>DimensionX Mini</h3>
+                        <p>Handheld 3D scanner for quick digitization of objects up to 20cm.</p>
+                    </article>
+                </div>
+            </section>
+
+            <section id="about" class="panel">
+                <h2>About 3D Devices</h2>
+                <p>3D printers and scanners enable rapid prototyping, education, and creative production. Use this site to search devices, read specs, and jump to purchase options.</p>
+            </section>
+        </main>
+
+        <footer class="site-footer">
+            <p>Built for anime fans — search, explore, and enjoy the best series.</p>
+        </footer>
+    </div>
+</body>
+    <div id="login-modal" class="modal hidden" aria-hidden="true">
+        <div class="modal-content">
+            <button id="login-close" class="modal-close" aria-label="Close">×</button>
+            <h3>Sign in</h3>
+            <input id="login-email" class="form-input" placeholder="Email address">
+            <input id="login-pass" type="password" class="form-input" placeholder="Password">
+            <div style="margin-top:14px"><button id="login-submit" class="search-button">Sign in</button></div>
+        </div>
+    </div>
+
+    <script>
+        (function(){
+            const open = document.getElementById('login-open');
+            const modal = document.getElementById('login-modal');
+            const close = document.getElementById('login-close');
+            const submit = document.getElementById('login-submit');
+
+            function updateButton(){
+                const name = localStorage.getItem('userName');
+                if(name){ open.textContent = 'Account'; }
+                else { open.textContent = 'Login'; }
+            }
+
+            open.addEventListener('click', ()=>{ if(localStorage.getItem('userName')){ alert('Already signed in as '+localStorage.getItem('userName')); } else { modal.classList.remove('hidden'); }});
+            close.addEventListener('click', ()=>{ modal.classList.add('hidden'); });
+            submit.addEventListener('click', ()=>{
+                const email = document.getElementById('login-email').value || '';
+                const name = email.split('@')[0] || 'User';
+                localStorage.setItem('userName', name);
+                modal.classList.add('hidden');
+                updateButton();
+                alert('Signed in as ' + name);
+            });
+
+            updateButton();
+        })();
+    </script>
 </html>

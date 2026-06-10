@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Device Search Results</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Noto+Sans+TC:wght@500;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="page">
+        <div class="topbar">
+            <button id="login-open" class="login-button">Login</button>
+        </div>
+        <header class="hero hero-small">
+            <div class="hero-text">
+                <span class="eyebrow">Search Results</span>
+                <h1>Device Info</h1>
+                <p id="search-summary">Loading your device search...</p>
+            </div>
+        </header>
+
+        <main class="content">
+            <section class="panel">
+                <div id="result" class="result-card hidden">
+                    <h2 id="result-title"></h2>
+                    <p id="result-description"></p>
+                    <ul id="result-features"></ul>
+                    <div class="action-row" style="margin-top:12px">
+                        <a id="buy-button" class="search-button" href="#">Buy</a>
+                        <a id="more-button" class="search-button secondary" href="#" style="margin-left:8px;background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--text);">Specs</a>
+                    </div>
+                </div>
+
+                <div id="not-found" class="message-panel hidden">
+                    <h2>Nothing matched your search</h2>
+                    <p>Try searching for devices like VoxelMate Pro, TriForge S1 or DimensionX Mini.</p>
+                </div>
+            </section>
+
+            <div class="action-row">
+                <a class="search-button secondary" href="index.html">Back to Search</a>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        const query = params.get('q')?.trim();
+
+        // List of known brands - redirect to dynamic brand page
+        const knownBrands = ['apple', 'samsung', 'sony', 'oppo'];
+        
+        if (query) {
+            const key = query.toLowerCase();
+            // Check if query is a brand (exact match or partial match)
+            if (knownBrands.includes(key)) {
+                window.location.href = `brand.html?brand=${encodeURIComponent(query)}`;
+                throw new Error('Redirecting...');
+            }
+            // Also check if any known brand is mentioned in the query
+            for (let brand of knownBrands) {
+                if (key.includes(brand)) {
+                    window.location.href = `brand.html?brand=${encodeURIComponent(brand.charAt(0).toUpperCase() + brand.slice(1))}`;
+                    throw new Error('Redirecting...');
+                }
+            }
+        }
+
+        const summary = document.getElementById('search-summary');
+        const result = document.getElementById('result');
+        const notFound = document.getElementById('not-found');
+        const titleEl = document.getElementById('result-title');
+        const descEl = document.getElementById('result-description');
+        const featuresEl = document.getElementById('result-features');
+
+        const deviceData = {
+            'voxelmate pro': {
+                id: 'voxelmate-pro',
+                title: 'VoxelMate Pro',
+                description: 'High-detail resin printer for models and prototypes.',
+                features: ['Resolution: 25 μm', 'Build volume: 192×120×200 mm', 'Price: $699']
+            },
+            'triforge s1': {
+                id: 'triforge-s1',
+                title: 'TriForge S1',
+                description: 'All-metal FDM printer with dual extrusion and large build area.',
+                features: ['Nozzle: 0.4mm', 'Build volume: 300×300×350 mm', 'Price: $899']
+            },
+            'dimensionx mini': {
+                id: 'dimensionx-mini',
+                title: 'DimensionX Mini',
+                description: 'Compact handheld 3D scanner for small objects and hobbyists.',
+                features: ['Scan accuracy: 0.2 mm', 'Scan area: up to 20 cm', 'Price: $349']
+            }
+        };
+
+        if (!query) {
+            summary.textContent = 'Please search for a device from the main page.';
+            notFound.classList.remove('hidden');
+        } else {
+            const key = query.toLowerCase();
+            summary.textContent = `Search result for “${query}”.`;
+            const device = deviceData[key];
+
+            if (device) {
+                titleEl.textContent = device.title;
+                descEl.textContent = device.description;
+                featuresEl.innerHTML = device.features.map(item => `<li>${item}</li>`).join('');
+                const buyButton = document.getElementById('buy-button');
+                const moreButton = document.getElementById('more-button');
+                buyButton.href = `checkout.html?id=${device.id}`;
+                moreButton.href = `checkout.html?id=${device.id}`;
+                result.classList.remove('hidden');
+            } else {
+                notFound.classList.remove('hidden');
+            }
+        }
+    </script>
+</body>
+    <div id="login-modal" class="modal hidden" aria-hidden="true">
+        <div class="modal-content">
+            <button id="login-close" class="modal-close" aria-label="Close">×</button>
+            <h3>Sign in</h3>
+            <input id="login-email" class="form-input" placeholder="Email address">
+            <input id="login-pass" type="password" class="form-input" placeholder="Password">
+            <div style="margin-top:14px"><button id="login-submit" class="search-button">Sign in</button></div>
+        </div>
+    </div>
+
+    <script>
+        (function(){
+            const open = document.getElementById('login-open');
+            const modal = document.getElementById('login-modal');
+            const close = document.getElementById('login-close');
+            const submit = document.getElementById('login-submit');
+
+            function updateButton(){
+                const name = localStorage.getItem('userName');
+                if(name){ open.textContent = 'Account'; }
+                else { open.textContent = 'Login'; }
+            }
+
+            open.addEventListener('click', ()=>{ if(localStorage.getItem('userName')){ alert('Signed in as '+localStorage.getItem('userName')); } else { modal.classList.remove('hidden'); }});
+            close.addEventListener('click', ()=>{ modal.classList.add('hidden'); });
+            submit.addEventListener('click', ()=>{
+                const email = document.getElementById('login-email').value || '';
+                const name = email.split('@')[0] || 'User';
+                localStorage.setItem('userName', name);
+                modal.classList.add('hidden');
+                updateButton();
+                alert('Signed in as ' + name);
+            });
+
+            updateButton();
+        })();
+    </script>
+</html>
